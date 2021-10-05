@@ -1,4 +1,4 @@
-package cz.muni.fi.plugin;
+package cz.muni.fi.xkozubi1;
 
 import hudson.Extension;
 import hudson.model.Computer;
