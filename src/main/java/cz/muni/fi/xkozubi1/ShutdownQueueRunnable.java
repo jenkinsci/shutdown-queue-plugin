@@ -17,8 +17,8 @@ public class ShutdownQueueRunnable implements Runnable {
     public void run() {
 
         System.out.println("Runnable run");
-        if (ShutdownQueueConfiguration.getInstance().getCheckboxPlugin() && Jenkins.getInstanceOrNull().isQuietingDown()
-                && !Jenkins.getInstanceOrNull().getQueue().isEmpty()) {
+        if (ShutdownQueueConfiguration.getInstance().getCheckboxPlugin() && Jenkins.get().isQuietingDown()
+                && !Jenkins.get().getQueue().isEmpty()) {
             logicClass.handleLogic();
         }
     }

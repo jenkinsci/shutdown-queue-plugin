@@ -25,8 +25,8 @@ public class ShutdownQueueComputerListener extends ComputerListener {
 
         executorService.scheduleAtFixedRate(() -> {
             System.out.println("Run");
-            if (ShutdownQueueConfiguration.getInstance().getCheckboxPlugin() && Jenkins.getInstanceOrNull().isQuietingDown()
-                    && !Jenkins.getInstanceOrNull().getQueue().isEmpty()) {
+            if (ShutdownQueueConfiguration.getInstance().getCheckboxPlugin() && Jenkins.get().isQuietingDown()
+                    && !Jenkins.get().getQueue().isEmpty()) {
                 logicClass.handleLogic();
             }
         }, 1, 1, TimeUnit.SECONDS);

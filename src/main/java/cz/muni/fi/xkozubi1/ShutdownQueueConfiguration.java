@@ -46,7 +46,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         return super.configure(staplerRequest, json);
     }
 
-    public FormValidation doCheckSeconds(@QueryParameter String value) throws IOException, ServletException {
+    public FormValidation doCheckSeconds(@QueryParameter String value) {
         try {
             Long.valueOf(value);
             return FormValidation.ok();
