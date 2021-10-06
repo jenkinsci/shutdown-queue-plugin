@@ -6,14 +6,6 @@ import java.util.Comparator;
 
 public class EstimatedDurationComparator implements Comparator<Queue.BuildableItem> {
 
-    private static class EstimatedDurationComparatorHolder {
-        static final EstimatedDurationComparator INSTANCE = new EstimatedDurationComparator();
-    }
-
-    public static EstimatedDurationComparator getInstance() {
-        return EstimatedDurationComparatorHolder.INSTANCE;
-    }
-
     @Override
     public int compare(Queue.BuildableItem buildableItem0, Queue.BuildableItem buildableItem1) {
 
