@@ -16,7 +16,7 @@ public class HandleQuietingDown {
         this.jenkinsInstance = Jenkins.getInstanceOrNull();
     }
 
-    public void handleLogic() {
+    public void handleLogic() throws InterruptedException {
         long longestRemainingTime = ShutdownQueueConfiguration.getInstance().getMilliseconds() > 0 ?
                 ShutdownQueueConfiguration.getInstance().getMilliseconds() : getLongestExecutorRemainingTime();
 
@@ -33,17 +33,11 @@ public class HandleQuietingDown {
 
         if (jenkinsInstance.getQueue().getBuildableItems().size() > 0)
         {
-            try {
-                synchronized (jenkinsInstance.getQueue().getBuildableItems()) {
-                    System.out.println("Canceling quiet down");
-                    jenkinsInstance.doCancelQuietDown();
-                    Thread.sleep(500);
-                    System.out.println("Starting quieting down");
-                    jenkinsInstance.doQuietDown();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Canceling quiet down");
+            jenkinsInstance.doCancelQuietDown();
+            Thread.sleep(500);
+            System.out.println("Starting quieting down");
+            jenkinsInstance.doQuietDown();
         }
     }
 

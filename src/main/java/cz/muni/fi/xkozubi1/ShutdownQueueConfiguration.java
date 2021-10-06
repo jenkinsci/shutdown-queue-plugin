@@ -25,6 +25,10 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         return checkboxPlugin;
     }
 
+    public boolean getCheckboxSorter() {
+        return checkboxSorter;
+    }
+
     public long getMilliseconds() {
         return milliseconds;
     }
