@@ -47,7 +47,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         checkboxPlugin = (Boolean) json.get("checkboxPlugin");
         checkboxSorter = (Boolean) json.get("checkboxSorter");
         milliseconds = Long.parseLong(json.getString("seconds")) * 1000; // convert seconds to milliseconds
-        runnablePeriod = Integer.parseInt(json.getString("Period"));
+        runnablePeriod = Integer.parseInt(json.getString("periodRunnable"));
         strategyOption = json.get("strategyType").toString();
 
         System.out.println(checkboxPlugin + " " + checkboxSorter + " " + milliseconds +

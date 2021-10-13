@@ -7,7 +7,7 @@
         <f:entry title="Sorter on" field="checkboxSorter">
             <f:checkbox default="true"/>
         </f:entry>
-        <f:entry field="periodRunnable" title="Period">
+        <f:entry title="Period" field="periodRunnable">
             <f:textbox default="10"/>
         </f:entry>
         <f:entry title="Cancel after" field="seconds">
