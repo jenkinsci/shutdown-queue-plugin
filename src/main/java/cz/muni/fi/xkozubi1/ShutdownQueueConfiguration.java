@@ -15,6 +15,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     private boolean checkboxPlugin;
     private boolean checkboxSorter;
     private long milliseconds;
+
     private String strategyOption;
 
     public ShutdownQueueConfiguration() {
@@ -31,6 +32,10 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     public long getMilliseconds() {
         return milliseconds;
+    }
+
+    public String getStrategyOption() {
+        return strategyOption;
     }
 
     @Override
