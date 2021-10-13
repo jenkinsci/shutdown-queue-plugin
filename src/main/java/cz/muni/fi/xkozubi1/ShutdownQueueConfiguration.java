@@ -2,13 +2,12 @@ package cz.muni.fi.xkozubi1;
 
 import hudson.Extension;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 
 @Extension
 public class ShutdownQueueConfiguration extends GlobalConfiguration {
@@ -16,6 +15,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     private boolean checkboxPlugin;
     private boolean checkboxSorter;
     private long milliseconds;
+    private String strategyOption;
 
     public ShutdownQueueConfiguration() {
         load();
@@ -38,8 +38,9 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         checkboxPlugin = (Boolean) json.get("checkboxPlugin");
         checkboxSorter = (Boolean) json.get("checkboxSorter");
         milliseconds = Long.parseLong(json.getString("seconds")) * 1000; // convert seconds to milliseconds
+        strategyOption = json.get("strategyType").toString();
 
-        System.out.println(checkboxPlugin + " " + checkboxSorter + " " + milliseconds);
+        System.out.println(checkboxPlugin + " " + checkboxSorter + " " + milliseconds + " " + strategyOption.toString());
 
         if (!checkboxPlugin) {
             Utils.doReset();
@@ -57,6 +58,15 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         } catch (NumberFormatException e) {
             return FormValidation.error("Please, enter a number");
         }
+    }
+
+    public ListBoxModel doFillStrategyTypeItems() {
+        ListBoxModel items = new ListBoxModel();
+
+        items.add("Sort", "sort");
+        items.add("Remove longer", "removeLonger");
+
+        return items;
     }
 
     public static ShutdownQueueConfiguration getInstance() {

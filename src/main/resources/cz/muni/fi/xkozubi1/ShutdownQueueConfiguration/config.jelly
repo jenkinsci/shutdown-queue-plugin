@@ -10,5 +10,8 @@
         <f:entry title="Cancel after" field="seconds">
             <f:textbox default="0"/>
         </f:entry>
+        <f:entry field="strategyType" title="Choose Strategy">
+            <f:select />
+        </f:entry>
     </f:section>
 </j:jelly>
