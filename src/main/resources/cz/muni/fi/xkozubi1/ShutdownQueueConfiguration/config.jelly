@@ -10,8 +10,8 @@
         <f:entry title="Period" field="periodRunnable">
             <f:textbox default="10"/>
         </f:entry>
-        <f:entry title="Cancel after" field="seconds">
-            <f:textbox default="0"/>
+        <f:entry title="Permeability barrier" field="permeability">
+            <f:textbox default="0.3"/>
         </f:entry>
         <f:entry field="strategyType" title="Choose Strategy">
             <f:select />

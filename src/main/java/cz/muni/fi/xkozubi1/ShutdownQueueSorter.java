@@ -14,7 +14,7 @@ public class ShutdownQueueSorter extends QueueSorter {
 
     public ShutdownQueueSorter(QueueSorter sorter) {
         originalQueueSorter = sorter;
-        comparator = EstimatedDurationComparator.getInstance();
+        comparator = new EstimatedDurationComparator();
     }
 
     @Override

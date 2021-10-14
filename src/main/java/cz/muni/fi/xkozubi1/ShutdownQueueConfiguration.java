@@ -14,8 +14,8 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     private boolean checkboxPlugin;
     private boolean checkboxSorter;
-    private long milliseconds;
     private int runnablePeriod;
+    private double permeability;
     private String strategyOption;
 
     public ShutdownQueueConfiguration() {
@@ -30,10 +30,6 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         return checkboxSorter;
     }
 
-    public long getMilliseconds() {
-        return milliseconds;
-    }
-
     public int getRunnablePeriod() {
         return runnablePeriod;
     }
@@ -46,12 +42,15 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
         checkboxPlugin = (Boolean) json.get("checkboxPlugin");
         checkboxSorter = (Boolean) json.get("checkboxSorter");
-        milliseconds = Long.parseLong(json.getString("seconds")) * 1000; // convert seconds to milliseconds
+        permeability = Double.parseDouble(json.getString("permeability"));
         runnablePeriod = Integer.parseInt(json.getString("periodRunnable"));
         strategyOption = json.get("strategyType").toString();
 
-        System.out.println(checkboxPlugin + " " + checkboxSorter + " " + milliseconds +
-                " " + runnablePeriod + " " + strategyOption);
+        System.out.println("plugin: " + checkboxPlugin +
+                "\nsorter: " + checkboxSorter + "" +
+                "\npermeability: " + permeability +
+                "\nperiod: " + runnablePeriod + "" +
+                "\nstrategy: " + strategyOption);
 
         if (!checkboxPlugin) {
             Utils.doReset();
