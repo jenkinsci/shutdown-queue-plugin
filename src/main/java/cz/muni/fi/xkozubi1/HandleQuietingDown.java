@@ -17,8 +17,9 @@ public class HandleQuietingDown {
     }
 
     public void handleLogic() throws InterruptedException {
-        long longestRemainingTime = ShutdownQueueConfiguration.getInstance().getMilliseconds() > 0 ?
-                ShutdownQueueConfiguration.getInstance().getMilliseconds() : getLongestExecutorRemainingTime();
+//        long longestRemainingTime = ShutdownQueueConfiguration.getInstance().getMilliseconds() > 0 ?
+//                ShutdownQueueConfiguration.getInstance().getMilliseconds() : getLongestExecutorRemainingTime();
+        long longestRemainingTime = getLongestExecutorRemainingTime();
 
         System.out.println("Found longest remaining time: " + longestRemainingTime);
 

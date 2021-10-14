@@ -14,8 +14,8 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     private boolean checkboxPlugin;
     private boolean checkboxSorter;
-    private int runnablePeriod;
     private double permeability;
+    private long periodRunnable = 10;
     private String strategyOption;
 
     public ShutdownQueueConfiguration() {
@@ -30,8 +30,8 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         return checkboxSorter;
     }
 
-    public int getRunnablePeriod() {
-        return runnablePeriod;
+    public long getPeriodRunnable() {
+        return periodRunnable;
     }
 
     public String getStrategyOption() {
@@ -43,13 +43,13 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         checkboxPlugin = (Boolean) json.get("checkboxPlugin");
         checkboxSorter = (Boolean) json.get("checkboxSorter");
         permeability = Double.parseDouble(json.getString("permeability"));
-        runnablePeriod = Integer.parseInt(json.getString("periodRunnable"));
+        periodRunnable = Long.parseLong(json.getString("periodRunnable"));
         strategyOption = json.get("strategyType").toString();
 
         System.out.println("plugin: " + checkboxPlugin +
                 "\nsorter: " + checkboxSorter + "" +
                 "\npermeability: " + permeability +
-                "\nperiod: " + runnablePeriod + "" +
+                "\nperiod: " + periodRunnable + "" +
                 "\nstrategy: " + strategyOption);
 
         if (!checkboxPlugin) {
@@ -57,16 +57,35 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         }
 
         Utils.handleSorterOn(checkboxSorter);
+
         save();
+        ShutdownQueueComputerListener.changeReadInterval(periodRunnable);
         return super.configure(staplerRequest, json);
     }
 
-    public FormValidation doCheckSeconds(@QueryParameter String value) {
+    public FormValidation doCheckPermeability(@QueryParameter String value) {
         try {
-            Long.valueOf(value);
+            double valueD = Double.valueOf(value);
+            if (valueD < 0 || valueD > 1) {
+                return FormValidation.error("Please, enter a number in the interval <0;1>.");
+            }
             return FormValidation.ok();
+
         } catch (NumberFormatException e) {
-            return FormValidation.error("Please, enter a number");
+            return FormValidation.error("Please, enter an integer.");
+        }
+    }
+
+    public FormValidation doCheckPeriodRunnable(@QueryParameter String value) {
+        try {
+            long valueI = Long.valueOf(value);
+            if (valueI < 0) {
+                return FormValidation.error("Please, enter a positive integer.");
+            }
+            return FormValidation.ok();
+
+        } catch (NumberFormatException e) {
+            return FormValidation.error("Please, enter an integer.");
         }
     }
 
