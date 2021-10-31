@@ -5,7 +5,9 @@ import jenkins.model.Jenkins;
 
 public class Utils {
 
-    static void handleSorterOn(boolean isSorterOn) {
+    public static boolean canAddToQueue = true;
+
+    public static void handleSorterOn(boolean isSorterOn) {
         if (isSorterOn) {
             QueueSorter originalSorter = Jenkins.getInstanceOrNull().getQueue().getSorter();
             if (originalSorter == null) {
@@ -18,7 +20,7 @@ public class Utils {
         }
     }
 
-    static void doReset() {
+    public static void doReset() {
         QueueSorter sorter = Jenkins.getInstanceOrNull().getQueue().getSorter();
         if (sorter instanceof ShutdownQueueSorter) {
             Jenkins.getInstanceOrNull().getQueue().setSorter(new DefaultSorter());
