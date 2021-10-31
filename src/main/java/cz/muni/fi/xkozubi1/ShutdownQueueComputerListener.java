@@ -9,10 +9,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 @Extension
 public class ShutdownQueueComputerListener extends ComputerListener {
-
+    private static Logger logger = Logger.getLogger(ShutdownQueueConfiguration.class.getName());
     private static ScheduledExecutorService executorService;
     private static ShutdownTask shutdownTask;
     private static ScheduledFuture<?> futureTask;
@@ -28,7 +29,7 @@ public class ShutdownQueueComputerListener extends ComputerListener {
         this.shutdownTask = new ShutdownTask(computer);
         changeReadInterval(ShutdownQueueConfiguration.getInstance().getPeriodRunnable());
 
-        System.out.println("Thread started");
+        logger.info("Shutdown-queue plugin thread has started.");
     }
 
     public static void changeReadInterval(long time)
@@ -37,7 +38,7 @@ public class ShutdownQueueComputerListener extends ComputerListener {
         {
             if (futureTask != null)
             {
-                futureTask.cancel(true);
+                futureTask.cancel(false);
             }
 
             futureTask = executorService.scheduleAtFixedRate(shutdownTask, 1, time, TimeUnit.SECONDS);
