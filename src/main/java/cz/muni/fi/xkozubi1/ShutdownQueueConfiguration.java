@@ -8,15 +8,18 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.logging.Logger;
+
 
 @Extension
 public class ShutdownQueueConfiguration extends GlobalConfiguration {
-
-    private boolean checkboxPlugin;
+    private static Logger logger = Logger.getLogger(ShutdownQueueConfiguration.class.getName());
+    private boolean checkboxPlugin = true;
     private boolean checkboxSorter;
-    private double permeability;
+    private String strategyOption = "classic";
+    private double permeability = 0.7;
     private long periodRunnable = 10;
-    private String strategyOption;
+    private long timeOpenQueueMillis = 500;
 
     public ShutdownQueueConfiguration() {
         load();
@@ -26,31 +29,39 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         return checkboxPlugin;
     }
 
-    public boolean getCheckboxSorter() {
-        return checkboxSorter;
+    public String getStrategyOption() {
+        return strategyOption;
     }
 
     public long getPeriodRunnable() {
         return periodRunnable;
     }
 
-    public String getStrategyOption() {
-        return strategyOption;
+    public double getPermeability() {
+        return permeability;
+    }
+
+    public long getTimeOpenQueueMillis() {
+        return timeOpenQueueMillis;
     }
 
     @Override
     public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
         checkboxPlugin = (Boolean) json.get("checkboxPlugin");
         checkboxSorter = (Boolean) json.get("checkboxSorter");
-        permeability = Double.parseDouble(json.getString("permeability"));
-        periodRunnable = Long.parseLong(json.getString("periodRunnable"));
         strategyOption = json.get("strategyType").toString();
+        periodRunnable = Long.parseLong(json.getString("periodRunnable"));
+        permeability = Double.parseDouble(json.getString("permeability"));
+        timeOpenQueueMillis = Long.parseLong(json.getString("timeOpenQueueMillis"));
 
-        System.out.println("plugin: " + checkboxPlugin +
-                "\nsorter: " + checkboxSorter + "" +
+        logger.info("Shutdown-queue plugin CONFIGURATION \n" +
+                "\nplugin: " + checkboxPlugin +
+                "\nsorter: " + checkboxSorter +
+                "\nstrategy: " + strategyOption +
+                "\nperiod: " + periodRunnable +
                 "\npermeability: " + permeability +
-                "\nperiod: " + periodRunnable + "" +
-                "\nstrategy: " + strategyOption);
+                "\ntimeOpenQueueMillis " + timeOpenQueueMillis
+                );
 
         if (!checkboxPlugin) {
             Utils.doReset();
@@ -92,7 +103,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     public ListBoxModel doFillStrategyTypeItems() {
         ListBoxModel items = new ListBoxModel();
 
-        items.add("Sort", "sort");
+        items.add("Classic", "classic");
         items.add("Remove longer", "removeLonger");
 
         return items;
