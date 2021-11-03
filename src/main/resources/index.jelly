@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    TODO
+    This plugin enables short jobs to overtake frozen queue during the shutdown time of long-running tasks.
 </div>
