@@ -103,7 +103,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     public ListBoxModel doFillStrategyTypeItems() {
         ListBoxModel items = new ListBoxModel();
 
-        items.add("Classic", "classic");
+        items.add("Default", "default");
         items.add("Remove longer", "removeLonger");
 
         return items;
