@@ -25,8 +25,8 @@ public class ShutdownQueueComputerListener extends ComputerListener {
 
     @Override
     public void onTemporarilyOnline(Computer computer) {
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.shutdownTask = new ShutdownTask(computer);
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        shutdownTask = new ShutdownTask(computer);
         changeReadInterval(ShutdownQueueConfiguration.getInstance().getPeriodRunnable());
 
         logger.info("Shutdown-queue plugin thread has started.");
