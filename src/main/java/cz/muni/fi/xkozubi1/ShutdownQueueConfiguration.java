@@ -47,8 +47,8 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     @Override
     public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
-        pluginOn = (Boolean) json.get("checkboxPlugin");
-        sorterOn = (Boolean) json.get("checkboxSorter");
+        pluginOn = (Boolean) json.get("pluginOn");
+        sorterOn = (Boolean) json.get("sorterOn");
         strategyOption = json.get("strategyType").toString();
         periodRunnable = Long.parseLong(json.getString("periodRunnable"));
         permeability = Double.parseDouble(json.getString("permeability"));
