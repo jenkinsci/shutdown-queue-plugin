@@ -37,12 +37,12 @@ public class HandleQuietingDown {
         double ratio = ShutdownQueueConfiguration.getInstance().getPermeability();
         String strategyOption = ShutdownQueueConfiguration.getInstance().getStrategyOption();
 
-        if (strategyOption.equals("classic")) {
-            logger.info("Doing classic strategy.");
+        if (strategyOption.equals("default")) {
+            logger.info("Performing default strategy.");
             strategyClassic(idleExecutorsCount, longestRemainingTime, ratio);
         }
         else if (strategyOption.equals("removeLonger")) {
-            logger.info("Doing removeLonger strategy");
+            logger.info("Performing removeLonger strategy");
             strategyRemoveLonger(longestRemainingTime, ratio);
         }
     }
