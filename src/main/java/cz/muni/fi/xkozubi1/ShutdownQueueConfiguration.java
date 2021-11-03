@@ -54,7 +54,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         permeability = Double.parseDouble(json.getString("permeability"));
         timeOpenQueueMillis = Long.parseLong(json.getString("timeOpenQueueMillis"));
 
-        logger.info("Shutdown-queue plugin CONFIGURATION \n" +
+        logger.info("\nShutdown-queue plugin CONFIGURATION\n" +
                 "\nplugin: " + pluginOn +
                 "\nsorter: " + sorterOn +
                 "\nstrategy: " + strategyOption +

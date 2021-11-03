@@ -24,13 +24,13 @@ public class HandleQuietingDown {
     public void handleLogic() throws InterruptedException {
         long idleExecutorsCount = getIdleExecutorsCount();
         if (idleExecutorsCount == 0) {
-            logger.warning("No idle executors are available");
+            logger.warning("No idle executor is available");
             return;
         }
 
         long longestRemainingTime = getLongestExecutorRemainingTime();
         if (longestRemainingTime <= -1L) { // check whether all executors are idle, i.e. longest task finished
-            logger.info("Longest task has finished.");
+            logger.info("The longest task has finished.");
             return;
         }
 
