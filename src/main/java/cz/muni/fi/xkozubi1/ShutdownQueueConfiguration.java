@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 @Extension
 public class ShutdownQueueConfiguration extends GlobalConfiguration {
     private static Logger logger = Logger.getLogger(ShutdownQueueConfiguration.class.getName());
-    private boolean checkboxPlugin = true;
-    private boolean checkboxSorter;
-    private String strategyOption = "classic";
+    private boolean pluginOn = true;
+    private boolean sorterOn;
+    private String strategyOption = "default";
     private double permeability = 0.7;
     private long periodRunnable = 10;
     private long timeOpenQueueMillis = 500;
@@ -25,8 +25,8 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         load();
     }
 
-    public boolean getCheckboxPlugin() {
-        return checkboxPlugin;
+    public boolean getPluginOn() {
+        return pluginOn;
     }
 
     public String getStrategyOption() {
@@ -47,27 +47,27 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     @Override
     public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
-        checkboxPlugin = (Boolean) json.get("checkboxPlugin");
-        checkboxSorter = (Boolean) json.get("checkboxSorter");
+        pluginOn = (Boolean) json.get("checkboxPlugin");
+        sorterOn = (Boolean) json.get("checkboxSorter");
         strategyOption = json.get("strategyType").toString();
         periodRunnable = Long.parseLong(json.getString("periodRunnable"));
         permeability = Double.parseDouble(json.getString("permeability"));
         timeOpenQueueMillis = Long.parseLong(json.getString("timeOpenQueueMillis"));
 
         logger.info("Shutdown-queue plugin CONFIGURATION \n" +
-                "\nplugin: " + checkboxPlugin +
-                "\nsorter: " + checkboxSorter +
+                "\nplugin: " + pluginOn +
+                "\nsorter: " + sorterOn +
                 "\nstrategy: " + strategyOption +
                 "\nperiod: " + periodRunnable +
                 "\npermeability: " + permeability +
                 "\ntimeOpenQueueMillis " + timeOpenQueueMillis
                 );
 
-        if (!checkboxPlugin) {
+        if (!pluginOn) {
             Utils.doReset();
         }
 
-        Utils.handleSorterOn(checkboxSorter);
+        Utils.handleSorterOn(sorterOn);
 
         save();
         ShutdownQueueComputerListener.changeReadInterval(periodRunnable);
