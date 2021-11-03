@@ -38,12 +38,20 @@ public class HandleQuietingDown {
         String strategyOption = ShutdownQueueConfiguration.getInstance().getStrategyOption();
 
         if (strategyOption.equals("default")) {
-            logger.info("Performing default strategy.");
+            logger.info("Performing <Default> strategy.");
             strategyClassic(idleExecutorsCount, longestRemainingTime, ratio);
         }
         else if (strategyOption.equals("removeLonger")) {
-            logger.info("Performing removeLonger strategy");
+            logger.info("Performing <Remove longer> strategy");
             strategyRemoveLonger(longestRemainingTime, ratio);
+        }
+        else if (strategyOption.equals("sortRemoveLonger")) {
+            logger.info("Performing <Sort and remove longer> strategy");
+
+            Utils.handleSorterOn(true);
+            jenkinsInstance.getQueue().getSorter().sortBuildableItems(jenkinsInstance.getQueue().getBuildableItems());
+            strategyRemoveLonger(longestRemainingTime, ratio);
+            Utils.doReset();
         }
     }
 

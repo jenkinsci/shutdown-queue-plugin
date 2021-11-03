@@ -68,9 +68,9 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         }
 
         Utils.handleSorterOn(sorterOn);
-
         save();
         ShutdownQueueComputerListener.changeReadInterval(periodRunnable);
+
         return super.configure(staplerRequest, json);
     }
 
@@ -105,6 +105,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
         items.add("Default", "default");
         items.add("Remove longer", "removeLonger");
+        items.add("Sort and remove longer", "sortRemoveLonger");
 
         return items;
     }
