@@ -50,6 +50,8 @@ public class HandleQuietingDown {
 
             Utils.handleSorterOn(true);
             jenkinsInstance.getQueue().getSorter().sortBuildableItems(jenkinsInstance.getQueue().getBuildableItems());
+
+            // first it sorts buildables and then does the same as remove longer strategy
             strategyRemoveLonger(longestRemainingTime, ratio);
             Utils.doReset();
         }
@@ -70,7 +72,7 @@ public class HandleQuietingDown {
                 "\nIdle executors count: " + idleExecutorsCount +
                 "\nwhiteListIDs count: " + whiteListIDs.size());
 
-        cancelTasksBut(whiteListIDs);
+        cancelTasksButWhitelist(whiteListIDs);
         cancelAndDoQuietDown(ShutdownQueueConfiguration.getInstance().getTimeOpenQueueMillis());
         putTasksBackToQueueBut(buildablesCopy, whiteListIDs);
     }
@@ -106,12 +108,12 @@ public class HandleQuietingDown {
                 .stream()
                 .filter(b -> b.task.getEstimatedDuration() * ratio >= longestExecutorTime)
                 .forEach(buildableItem -> {
-                    printCancelTaskInfo(buildableItem);
+                    logCancelTaskInfo(buildableItem);
                     queue.cancel(buildableItem);
                 });
     }
 
-    private void cancelTasksBut(List<Long> whitelist) {
+    private void cancelTasksButWhitelist(List<Long> whitelist) {
         Queue queue = Jenkins.get().getQueue();
 
         queue.getBuildableItems()
@@ -130,7 +132,7 @@ public class HandleQuietingDown {
                 .collect(Collectors.toList());
     }
 
-    private void printCancelTaskInfo(Queue.BuildableItem item) {
+    private void logCancelTaskInfo(Queue.BuildableItem item) {
         logger.info("Canceling task " + item.task.getName() + " with an estimated duration " + item.task.getEstimatedDuration());
     }
 
