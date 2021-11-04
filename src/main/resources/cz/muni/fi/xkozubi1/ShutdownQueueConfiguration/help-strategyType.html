@@ -1,0 +1,26 @@
+<div>
+    <i>Note:</i><br>
+    <i>"buildable overflowing": Shutdown mode is canceled for "Open queue time". During this time, buildable items can
+        left the buildable queue in order to be executed. After "Open queue time", shutdown mode is turned back on.
+    </i>
+    <p></p>
+
+    <p>
+        <b>Default strategy</b><br>
+        Creates a copy of the buildable queue and chooses items that satisfy conditions to overtake the frozen queue
+        (whitelist). If there are any, the original buildable queue is cleared. After "buildable overflowing", items
+        except whitelist are put back into the queue.
+    </p>
+
+    <p>
+        <b>Remove longer strategy</b><br>
+        Simply removes tasks from the queue whose estimated duration does not satisfy condition before
+        "buildable overflowing".
+    </p>
+
+    <p>
+        <b>Sort and remove longer strategy</b><br>
+        Sorts the queue by an estimated duration and a rest is the same as Remove longer strategy.
+        Due to sorting at the beginning, more tasks might be executed in the same amount of time.
+    </p>
+</div>
