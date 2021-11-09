@@ -10,7 +10,9 @@ import java.util.OptionalLong;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-
+/**
+ * Based on a strategy type, appropriate logic is performed.
+ */
 public class HandleQuietingDown {
     private final Computer computer;
     private final Jenkins jenkinsInstance;
@@ -21,6 +23,10 @@ public class HandleQuietingDown {
         this.jenkinsInstance = Jenkins.getInstanceOrNull();
     }
 
+    /**
+     * The main function, calls other methods based on obtained strategy type if there is any idle executor.
+     * @throws InterruptedException
+     */
     public void handleLogic() throws InterruptedException {
         long idleExecutorsCount = getIdleExecutorsCount();
         if (idleExecutorsCount == 0) {
@@ -77,6 +83,12 @@ public class HandleQuietingDown {
         putTasksBackToQueueBut(buildablesCopy, whiteListIDs);
     }
 
+    /**
+     * This method performs "remove longer strategy"
+     * @param longestRemainingTime executor's longest estimated duration
+     * @param ratio permeability value from the settings
+     * @throws InterruptedException
+     */
     private void strategyRemoveLonger(long longestRemainingTime, double ratio) throws InterruptedException {
         if(longestRemainingTime != 0) {
             cancelTasksLongerThan(longestRemainingTime, ratio);
@@ -85,6 +97,9 @@ public class HandleQuietingDown {
         cancelAndDoQuietDown(ShutdownQueueConfiguration.getInstance().getTimeOpenQueueMillis());
     }
 
+    /**
+     * @returns the longest estimated remaining time of all executors
+     */
     private long getLongestExecutorRemainingTime() {
         OptionalLong maxRemainingTime = computer.getExecutors()
                 .stream()
@@ -94,6 +109,9 @@ public class HandleQuietingDown {
         return maxRemainingTime.isPresent() ? maxRemainingTime.getAsLong() : -1L;
     }
 
+    /**
+     * @returns the number of idle executors
+     */
     private long getIdleExecutorsCount() {
         return computer.getExecutors()
                 .stream()
@@ -101,6 +119,11 @@ public class HandleQuietingDown {
                 .count();
     }
 
+    /**
+     * Cancels tasks from buildable queue which estimated duration * ratio is longer than longestExecutorTime
+     * @param longestExecutorTime executor's longest estimated duration
+     * @param ratio "permeability" value from the settings
+     */
     private void cancelTasksLongerThan(long longestExecutorTime, double ratio) {
         Queue queue = Jenkins.get().getQueue();
 
@@ -113,15 +136,26 @@ public class HandleQuietingDown {
                 });
     }
 
-    private void cancelTasksButWhitelist(List<Long> whitelist) {
+    /**
+     * Cancels tasks from the buildable queue which are not in the whitelist
+     * @param whitelistIDs list of BuildableItems' IDs which are allowed to stay in the BuildableQueue
+     */
+    private void cancelTasksButWhitelist(List<Long> whitelistIDs) {
         Queue queue = Jenkins.get().getQueue();
 
         queue.getBuildableItems()
                 .stream()
-                .filter(b -> !whitelist.contains(b.getId()))
+                .filter(b -> !whitelistIDs.contains(b.getId()))
                 .forEach(b -> queue.cancel(b));
     }
 
+    /**
+     * @param longestExecutorTime executor's longest estimated duration
+     * @param ratio permeability value from the settings
+     * @param idleExecutorsCount the number of idle executors
+     * @returns list of BuildableItems' IDs which satisfy conditions. Length of the list is less than or equal to the
+     * number of idle executors.
+     */
     private List<Long> getWhiteListIDs(long longestExecutorTime, double ratio, long idleExecutorsCount) {
         return Jenkins.get().getQueue().getBuildableItems()
                 .stream()
@@ -132,15 +166,27 @@ public class HandleQuietingDown {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Logs info about an item to be cancelled
+     * @param item Queue.BuildableItem
+     */
     private void logCancelTaskInfo(Queue.BuildableItem item) {
-        logger.info("Canceling task " + item.task.getName() + " with an estimated duration " + item.task.getEstimatedDuration());
+        logger.info("Canceling task " + item.task.getName() + " with an estimated duration "
+                + item.task.getEstimatedDuration());
     }
 
+    /**
+     * @returns array copy of BuildableItems
+     */
     private Queue.BuildableItem[] getCopyBuildables() {
         Collection<Queue.BuildableItem> buildables = Jenkins.get().getQueue().getBuildableItems();
         return buildables.toArray(new Queue.BuildableItem[buildables.size()]);
     }
 
+    /**
+     * logs info about items
+     * @param items array of Queue.BuildableItem
+     */
     private void logBuildablesCopy(Queue.BuildableItem[] items) {
         logger.info("BUILDABLE ITEMS COPY\n");
         for (Queue.BuildableItem item : items) {
@@ -150,6 +196,11 @@ public class HandleQuietingDown {
         //could use Arrays.stream()...
     }
 
+    /**
+     * Cancels quieting down, waits for timeMillis and then starts quieting down again
+     * @param timeMillis "Open queue time" from the settings
+     * @throws InterruptedException
+     */
     private void cancelAndDoQuietDown(long timeMillis) throws InterruptedException {
         if (jenkinsInstance.getQueue().getBuildableItems().size() > 0)
         {
@@ -164,6 +215,11 @@ public class HandleQuietingDown {
         Utils.canAddToQueue = false;
     }
 
+    /**
+     * schedules BuildableItems' tasks which are not in whiteListIDs and were cancelled before
+     * @param buildablesCopy array copy of BuildableItems
+     * @param whiteListIDs list of BuildableItems' IDs which are allowed to stay in the BuildableQueue
+     */
     private void putTasksBackToQueueBut(Queue.BuildableItem[] buildablesCopy, List<Long> whiteListIDs) {
         for (Queue.BuildableItem item : buildablesCopy) {
             if (!whiteListIDs.contains(item.getId())) {
