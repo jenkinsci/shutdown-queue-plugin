@@ -69,7 +69,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
         Utils.handleSorterOn(sorterOn);
         save();
-        ShutdownQueueComputerListener.changeReadInterval(periodRunnable);
+        ShutdownQueueComputerListener.changeScheduleInterval(periodRunnable);
 
         return super.configure(staplerRequest, json);
     }

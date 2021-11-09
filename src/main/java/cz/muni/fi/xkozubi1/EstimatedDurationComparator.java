@@ -4,6 +4,12 @@ import hudson.model.Queue;
 
 import java.util.Comparator;
 
+
+/**
+ * Compares Queue.BuildableItems by getEstimatedDuration().
+ * Used with ShutdownQueueSorter.
+ * @author Dominik Kozubik
+ */
 public class EstimatedDurationComparator implements Comparator<Queue.BuildableItem> {
 
     @Override

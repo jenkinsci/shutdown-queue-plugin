@@ -11,6 +11,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+/**
+ * Plugin initiation
+ * @Author Dominik Kozubik
+ */
 @Extension
 public class ShutdownQueueComputerListener extends ComputerListener {
     private static Logger logger = Logger.getLogger(ShutdownQueueConfiguration.class.getName());
@@ -27,12 +31,16 @@ public class ShutdownQueueComputerListener extends ComputerListener {
     public void onTemporarilyOnline(Computer computer) {
         executorService = Executors.newSingleThreadScheduledExecutor();
         shutdownTask = new ShutdownTask(computer);
-        changeReadInterval(ShutdownQueueConfiguration.getInstance().getPeriodRunnable());
+        changeScheduleInterval(ShutdownQueueConfiguration.getInstance().getPeriodRunnable());
 
         logger.info("Shutdown-queue plugin thread has started.");
     }
 
-    public static void changeReadInterval(long time)
+    /**
+     * Changes delay value of a periodic callable shutdownTask.
+     * @param time seconds
+     */
+    public static void changeScheduleInterval(long time)
     {
         if(time > 0)
         {

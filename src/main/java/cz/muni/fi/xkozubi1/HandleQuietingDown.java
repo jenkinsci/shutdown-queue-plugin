@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * Based on a strategy type, appropriate logic is performed.
+ * @Author Dominik Kozubik
  */
 public class HandleQuietingDown {
     private final Computer computer;
@@ -45,7 +46,7 @@ public class HandleQuietingDown {
 
         if (strategyOption.equals("default")) {
             logger.info("Performing <Default> strategy.");
-            strategyClassic(idleExecutorsCount, longestRemainingTime, ratio);
+            strategyDefault(idleExecutorsCount, longestRemainingTime, ratio);
         }
         else if (strategyOption.equals("removeLonger")) {
             logger.info("Performing <Remove longer> strategy");
@@ -63,8 +64,15 @@ public class HandleQuietingDown {
         }
     }
 
-    private void strategyClassic(long idleExecutorsCount, long longestRemainingTime, double ratio) throws InterruptedException {
-        List<Long> whiteListIDs = getWhiteListIDs(longestRemainingTime, ratio, idleExecutorsCount);
+    /**
+     * Performs Default strategy.
+     * @param idleExecutorsCount the number of idle executors
+     * @param longestExecutorTime executor's longest estimated duration
+     * @param ratio permeability value from the settings
+     * @throws InterruptedException
+     */
+    private void strategyDefault(long idleExecutorsCount, long longestExecutorTime, double ratio) throws InterruptedException {
+        List<Long> whiteListIDs = getWhiteListIDs(longestExecutorTime, ratio, idleExecutorsCount);
 
         if (whiteListIDs.size() == 0) {
             logger.info("No tasks satisfy condition.");
@@ -74,7 +82,7 @@ public class HandleQuietingDown {
         Queue.BuildableItem[] buildablesCopy = getCopyBuildables();
         logBuildablesCopy(buildablesCopy);
 
-        logger.info("Executor longest remaining time: " + longestRemainingTime +
+        logger.info("Executor longest remaining time: " + longestExecutorTime +
                 "\nIdle executors count: " + idleExecutorsCount +
                 "\nwhiteListIDs count: " + whiteListIDs.size());
 
@@ -85,20 +93,20 @@ public class HandleQuietingDown {
 
     /**
      * This method performs "remove longer strategy"
-     * @param longestRemainingTime executor's longest estimated duration
+     * @param longestExecutorTime executor's longest estimated duration
      * @param ratio permeability value from the settings
      * @throws InterruptedException
      */
-    private void strategyRemoveLonger(long longestRemainingTime, double ratio) throws InterruptedException {
-        if(longestRemainingTime != 0) {
-            cancelTasksLongerThan(longestRemainingTime, ratio);
+    private void strategyRemoveLonger(long longestExecutorTime, double ratio) throws InterruptedException {
+        if (longestExecutorTime != 0) {
+            cancelTasksLongerThan(longestExecutorTime, ratio);
         }
 
         cancelAndDoQuietDown(ShutdownQueueConfiguration.getInstance().getTimeOpenQueueMillis());
     }
 
     /**
-     * @returns the longest estimated remaining time of all executors
+     * @return the longest estimated remaining time of all executors
      */
     private long getLongestExecutorRemainingTime() {
         OptionalLong maxRemainingTime = computer.getExecutors()
@@ -110,7 +118,7 @@ public class HandleQuietingDown {
     }
 
     /**
-     * @returns the number of idle executors
+     * @return the number of idle executors
      */
     private long getIdleExecutorsCount() {
         return computer.getExecutors()
@@ -176,7 +184,7 @@ public class HandleQuietingDown {
     }
 
     /**
-     * @returns array copy of BuildableItems
+     * @return array copy of BuildableItems
      */
     private Queue.BuildableItem[] getCopyBuildables() {
         Collection<Queue.BuildableItem> buildables = Jenkins.get().getQueue().getBuildableItems();

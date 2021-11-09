@@ -3,7 +3,13 @@ package cz.muni.fi.xkozubi1;
 import hudson.model.Computer;
 import jenkins.model.Jenkins;
 
-
+/**
+ * Plugin runnable.
+ * If the plugin is on, Jenkins is going to shut down, and the buildable queue is not empty, calls a method
+ * handleLogic() from HandleQuietingDown which takes care of the rest of the plugin's logic.
+ *
+ * @Author Dominik Kozubik
+ */
 public class ShutdownTask implements Runnable {
     private HandleQuietingDown handleQuietingDown;
 
