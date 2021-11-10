@@ -3,6 +3,7 @@ package cz.muni.fi.xkozubi1;
 import hudson.model.Computer;
 import jenkins.model.Jenkins;
 
+
 /**
  * Plugin runnable.
  * If the plugin is on, Jenkins is going to shut down, and the buildable queue is not empty, calls a method

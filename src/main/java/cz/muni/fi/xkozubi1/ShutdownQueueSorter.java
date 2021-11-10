@@ -7,6 +7,7 @@ import jenkins.model.Jenkins;
 import java.util.Collections;
 import java.util.List;
 
+
 /**
  * Plugin's sorter. It is used if sorterOn or strategy type "Sort and remove longer" is on.
  * Also preserves default Jenkins sorter.

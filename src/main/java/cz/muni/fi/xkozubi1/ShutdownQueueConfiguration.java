@@ -10,6 +10,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.logging.Logger;
 
+
 /**
  * Settings for the plugin. Can be found in Jenkins global settings.
  * @Author Dominik Kozubik

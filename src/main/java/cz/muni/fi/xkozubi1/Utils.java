@@ -3,6 +3,7 @@ package cz.muni.fi.xkozubi1;
 import hudson.model.queue.QueueSorter;
 import jenkins.model.Jenkins;
 
+
 /**
  * @Author Dominik Kozubik
  */

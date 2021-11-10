@@ -10,6 +10,7 @@ import java.util.OptionalLong;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+
 /**
  * Based on a strategy type, appropriate logic is performed.
  * @Author Dominik Kozubik
