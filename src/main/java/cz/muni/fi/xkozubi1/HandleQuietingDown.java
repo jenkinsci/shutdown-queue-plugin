@@ -80,7 +80,7 @@ public class HandleQuietingDown {
             return;
         }
 
-        Queue.BuildableItem[] buildablesCopy = getCopyBuildables();
+        Queue.BuildableItem[] buildablesCopy = getBuildablesCopy();
         logBuildablesCopy(buildablesCopy);
 
         logger.info("Executor longest remaining time: " + longestExecutorTime +
@@ -187,7 +187,7 @@ public class HandleQuietingDown {
     /**
      * @return array copy of BuildableItems
      */
-    private Queue.BuildableItem[] getCopyBuildables() {
+    private Queue.BuildableItem[] getBuildablesCopy() {
         Collection<Queue.BuildableItem> buildables = Jenkins.get().getQueue().getBuildableItems();
         return buildables.toArray(new Queue.BuildableItem[buildables.size()]);
     }
