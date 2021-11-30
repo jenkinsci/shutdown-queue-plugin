@@ -3,6 +3,8 @@ package cz.muni.fi.xkozubi1;
 import hudson.model.Computer;
 import jenkins.model.Jenkins;
 
+import java.util.logging.Logger;
+
 
 /**
  * Plugin runnable.
@@ -13,6 +15,7 @@ import jenkins.model.Jenkins;
  */
 public class ShutdownTask implements Runnable {
     private HandleQuietingDown handleQuietingDown;
+    private static Logger logger = Logger.getLogger(ShutdownTask.class.getName());
 
     public ShutdownTask(Computer computer) {
         handleQuietingDown = new HandleQuietingDown(computer);
@@ -26,7 +29,7 @@ public class ShutdownTask implements Runnable {
             try {
                 handleQuietingDown.handleLogic();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.warning("Interrupted exception occurred while doing shutdown-queue plugin logic.");
             }
         }
     }
