@@ -2,22 +2,22 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <f:section title="Shutdown-queue plugin">
         <f:entry title="Plugin on" field="pluginOn">
-            <f:checkbox default="true"/>
+            <f:checkbox/>
         </f:entry>
         <f:entry title="Sorter on" field="sorterOn">
-            <f:checkbox default="false"/>
+            <f:checkbox/>
         </f:entry>
         <f:entry title="Choose strategy" field="strategyType">
-            <f:select />
+            <f:select/>
         </f:entry>
         <f:entry title="Period" field="periodRunnable">
-            <f:textbox default="10"/>
+            <f:textbox/>
         </f:entry>
         <f:entry title="Permeability barrier" field="permeability">
-            <f:textbox default="0.7"/>
+            <f:textbox/>
         </f:entry>
         <f:entry title="Open queue time" field="timeOpenQueueMillis">
-            <f:textbox default="500"/>
+            <f:textbox/>
         </f:entry>
     </f:section>
 </j:jelly>
