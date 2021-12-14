@@ -46,9 +46,9 @@ public class HandleQuietingDown {
         double ratio = ShutdownQueueConfiguration.getInstance().getPermeability();
         String strategyOption = ShutdownQueueConfiguration.getInstance().getStrategyOption();
 
-        if (strategyOption.equals("default")) {
-            logger.info("Performing <Default> strategy.");
-            strategyDefault(idleExecutorsCount, longestRemainingTime, ratio);
+        if (strategyOption.equals("copying")) {
+            logger.info("Performing <Copying> strategy.");
+            strategyCopying(idleExecutorsCount, longestRemainingTime, ratio);
         }
         else if (strategyOption.equals("removeLonger")) {
             logger.info("Performing <Remove longer> strategy");
@@ -67,13 +67,13 @@ public class HandleQuietingDown {
     }
 
     /**
-     * Performs Default strategy.
+     * Performs Copying strategy.
      * @param idleExecutorsCount the number of idle executors
      * @param longestExecutorTime executor's longest estimated duration
      * @param ratio permeability value from the settings
      * @throws InterruptedException
      */
-    private void strategyDefault(long idleExecutorsCount, long longestExecutorTime, double ratio) throws InterruptedException {
+    private void strategyCopying(long idleExecutorsCount, long longestExecutorTime, double ratio) throws InterruptedException {
         List<Long> whiteListIDs = getWhiteListIDs(longestExecutorTime, ratio, idleExecutorsCount);
 
         if (whiteListIDs.size() == 0) {

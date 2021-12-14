@@ -55,7 +55,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
         pluginOn = json.optBoolean("pluginOn", true);
         sorterOn = json.optBoolean("sorterOn", false);
-        strategyOption = json.optString("strategyType", "default");
+        strategyOption = json.optString("strategyType", "copying");
         periodRunnable = json.optLong("periodRunnable", 10);
         permeability = json.optDouble("permeability", 0.7);
         timeOpenQueueMillis = json.optLong("timeOpenQueueMillis", 500);
@@ -109,7 +109,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     public ListBoxModel doFillStrategyTypeItems() {
         ListBoxModel items = new ListBoxModel();
 
-        items.add("Default", "default");
+        items.add("Copying", "copying");
         items.add("Remove longer", "removeLonger");
         items.add("Sort and remove longer", "sortRemoveLonger");
 
@@ -120,7 +120,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     {
         pluginOn = true;
         sorterOn = false;
-        strategyOption = "default";
+        strategyOption = "copying";
         permeability = 0.6;
         periodRunnable = 10;
         timeOpenQueueMillis = 500;
