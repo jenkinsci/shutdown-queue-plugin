@@ -18,15 +18,17 @@ import java.util.logging.Logger;
 @Extension
 public class ShutdownQueueConfiguration extends GlobalConfiguration {
     private static Logger logger = Logger.getLogger(ShutdownQueueConfiguration.class.getName());
-    private boolean pluginOn = true;
+    
+    private boolean pluginOn;
     private boolean sorterOn;
-    private String strategyOption = "default";
-    private double permeability = 0.7;
-    private long periodRunnable = 10;
-    private long timeOpenQueueMillis = 500;
+    private String strategyOption;
+    private double permeability;
+    private long periodRunnable;
+    private long timeOpenQueueMillis;
 
     public ShutdownQueueConfiguration() {
         load();
+        setDefaultValues()
     }
 
     public boolean getPluginOn() {
@@ -112,6 +114,16 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         items.add("Sort and remove longer", "sortRemoveLonger");
 
         return items;
+    }
+    
+    private void setDefaultValues()
+    {
+        pluginOn = true;
+        sorterOn = false;
+        strategyOption = "default";
+        permeability = 0.6;
+        periodRunnable = 10;
+        timeOpenQueueMillis = 500;
     }
 
     public static ShutdownQueueConfiguration getInstance() {

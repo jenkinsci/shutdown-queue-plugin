@@ -41,7 +41,7 @@ public class ShutdownQueueComputerListener extends ComputerListener {
      * Changes delay value of a periodic callable shutdownTask.
      * @param time seconds
      */
-    public static void changeScheduleInterval(long time)
+    static void changeScheduleInterval(long time)
     {
         if(time > 0)
         {
