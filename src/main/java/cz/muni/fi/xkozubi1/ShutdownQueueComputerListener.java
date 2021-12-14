@@ -1,5 +1,6 @@
 package cz.muni.fi.xkozubi1;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.TaskListener;
@@ -29,6 +30,7 @@ public class ShutdownQueueComputerListener extends ComputerListener {
     }
 
     @Override
+    @SuppressFBWarnings(value = {"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"}, justification = "intentional global state keepers")
     public void onTemporarilyOnline(Computer computer) {
         executorService = Executors.newSingleThreadScheduledExecutor();
         shutdownTask = new ShutdownTask(computer);
@@ -41,7 +43,7 @@ public class ShutdownQueueComputerListener extends ComputerListener {
      * Changes delay value of a periodic callable shutdownTask.
      * @param time seconds
      */
-    static void changeScheduleInterval(long time)
+    static synchronized  void changeScheduleInterval(long time)
     {
         if(time > 0)
         {

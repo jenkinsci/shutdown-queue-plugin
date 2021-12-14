@@ -7,7 +7,7 @@ import hudson.model.queue.QueueListener;
 public class ShutdownQueueQueueListener extends QueueListener {
     @Override
     public void onEnterWaiting(Queue.WaitingItem wi) {
-        if (Utils.canAddToQueue) {
+        if (Utils.isCanAddToQueue()) {
             super.onEnterWaiting(wi);
         }
     }

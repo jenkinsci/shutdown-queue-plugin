@@ -1,5 +1,6 @@
 package cz.muni.fi.xkozubi1;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Queue;
 import hudson.model.queue.QueueSorter;
 import jenkins.model.Jenkins;
@@ -31,6 +32,7 @@ public class ShutdownQueueSorter extends QueueSorter {
         Collections.sort(buildableItems, comparator);
     }
 
+    @SuppressFBWarnings(value = {"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"}, justification = "filled async, but may be correct")
     void reset() {
         sortBuildableItems(Jenkins.getInstanceOrNull().getQueue().getBuildableItems());
         Queue.getInstance().maintain();

@@ -1,5 +1,6 @@
 package cz.muni.fi.xkozubi1;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Computer;
 import hudson.model.Queue;
 import jenkins.model.Jenkins;
@@ -210,10 +211,11 @@ public class HandleQuietingDown {
      * @param timeMillis "Open queue time" from the settings
      * @throws InterruptedException
      */
+    @SuppressFBWarnings(value = {"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"}, justification = "intentional global state keepers")
     private void cancelAndDoQuietDown(long timeMillis) throws InterruptedException {
         if (jenkinsInstance.getQueue().getBuildableItems().size() > 0)
         {
-            Utils.canAddToQueue = false;
+            Utils.setCanAddToQueue(false);
             logger.warning("Canceling shutdown for " + timeMillis + " milliseconds.");
             jenkinsInstance.doCancelQuietDown();
             Thread.sleep(timeMillis);
@@ -221,7 +223,7 @@ public class HandleQuietingDown {
             jenkinsInstance.doQuietDown();
         }
 
-        Utils.canAddToQueue = false;
+        Utils.setCanAddToQueue(false);
     }
 
     /**
