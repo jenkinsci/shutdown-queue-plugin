@@ -28,7 +28,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     public ShutdownQueueConfiguration() {
         load();
-        setDefaultValues()
+        setDefaultValues();
     }
 
     public boolean getPluginOn() {
