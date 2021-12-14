@@ -82,7 +82,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     public FormValidation doCheckPermeability(@QueryParameter String value) {
         try {
-            double valueD = Double.valueOf(value);
+            double valueD = Double.parseDouble(value);
             if (valueD < 0 || valueD > 1) {
                 return FormValidation.error("Please, enter a number in the interval <0;1>.");
             }
@@ -95,7 +95,7 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
 
     public FormValidation doCheckPeriodRunnable(@QueryParameter String value) {
         try {
-            long valueI = Long.valueOf(value);
+            long valueI = Long.parseLong(value);
             if (valueI < 0) {
                 return FormValidation.error("Please, enter a positive integer.");
             }

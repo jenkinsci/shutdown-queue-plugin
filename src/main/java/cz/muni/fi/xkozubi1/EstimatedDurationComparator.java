@@ -2,6 +2,7 @@ package cz.muni.fi.xkozubi1;
 
 import hudson.model.Queue;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 
@@ -10,7 +11,7 @@ import java.util.Comparator;
  * Used with ShutdownQueueSorter.
  * @author Dominik Kozubik
  */
-public class EstimatedDurationComparator implements Comparator<Queue.BuildableItem> {
+public class EstimatedDurationComparator implements Comparator<Queue.BuildableItem>, Serializable {
 
     @Override
     public int compare(Queue.BuildableItem buildableItem0, Queue.BuildableItem buildableItem1) {
