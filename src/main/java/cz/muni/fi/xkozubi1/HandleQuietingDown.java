@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * Based on a strategy type, appropriate logic is performed.
- * @Author Dominik Kozubik
+ * @author Dominik Kozubik
  */
 public class HandleQuietingDown {
     private final Computer computer;
@@ -28,7 +28,7 @@ public class HandleQuietingDown {
 
     /**
      * The main function, calls other methods based on obtained strategy type if there is any idle executor.
-     * @throws InterruptedException
+     * @throws InterruptedException in case the method is interrupted
      */
     public void handleLogic() throws InterruptedException {
         long idleExecutorsCount = getIdleExecutorsCount();

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  * Plugin initiation
- * @Author Dominik Kozubik
+ * @author Dominik Kozubik
  */
 @Extension
 public class ShutdownQueueComputerListener extends ComputerListener {

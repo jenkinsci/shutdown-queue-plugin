@@ -6,7 +6,7 @@ import jenkins.model.Jenkins;
 
 
 /**
- * @Author Dominik Kozubik
+ * @author Dominik Kozubik
  */
 public class Utils {
 
