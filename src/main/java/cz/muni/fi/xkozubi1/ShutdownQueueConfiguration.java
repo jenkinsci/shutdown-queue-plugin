@@ -12,6 +12,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -140,11 +141,28 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     }
 
     private void apply() {
-        if (!pluginOn) {
-            Utils.doReset();
+        try {
+            if (!pluginOn) {
+                Utils.doReset();
+            }
+            Utils.handleSorterOn(isSorterOn());
+            ShutdownQueueComputerListener.changeScheduleInterval(periodRunnable);
+            logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called OK.");
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called to soon.");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    logger.log(Level.WARNING, "Sleeping 2s to try apply later");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (Exception ex) {
+                        logger.log(Level.INFO, "sleep gone", ex);
+                    }
+                    apply();
+                }
+            }).start();
         }
-        Utils.handleSorterOn(isSorterOn());
-        ShutdownQueueComputerListener.changeScheduleInterval(periodRunnable);
     }
 
     public FormValidation doCheckPermeability(@QueryParameter String value) {
