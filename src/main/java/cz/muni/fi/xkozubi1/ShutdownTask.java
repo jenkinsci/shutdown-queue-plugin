@@ -23,7 +23,7 @@ public class ShutdownTask implements Runnable {
 
     @Override
     public void run() {
-        if (ShutdownQueueConfiguration.getInstance().getPluginOn() &&
+        if (ShutdownQueueConfiguration.getInstance().isPluginOn() &&
                 Jenkins.get().isQuietingDown() &&
                 Jenkins.get().getQueue().getBuildableItems().size() > 0) {
             try {
