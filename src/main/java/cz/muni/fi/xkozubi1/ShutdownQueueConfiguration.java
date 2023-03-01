@@ -156,30 +156,37 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
             logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called OK on attempt " + applyCounter.size());
             applyCounter.clear();
         } catch (Exception ex) {
-            applyCounter.add(ex);
-            logger.log(Level.WARNING,
-                    "apply off ShutdownQueue Plugin settings called to soon: " + applyCounter.size() + "/" + MAX_APPLY_ATTEMPTS + "-times; now with: " + ex.getMessage() + " occured");
-            if (applyCounter.size() >= MAX_APPLY_ATTEMPTS) {
-                logger.log(Level.SEVERE, "apply off ShutdownQueue Plugin settings failed : " + applyCounter.size() + "-times; Max was " + MAX_APPLY_ATTEMPTS + "game over:");
-                for (int x = 0; x < applyCounter.size(); x++) {
-                    Exception oldex = applyCounter.get(x);
-                    logger.log(Level.SEVERE, x + " ShutdownQueue old exception: ", oldex);
-                }
-            } else {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.log(Level.WARNING, "Sleeping 2s to try apply later");
-                        try {
-                            Thread.sleep(2000);
-                        } catch (Exception ex) {
-                            logger.log(Level.INFO, "sleep gone", ex);
-                        }
-                        apply();
-                    }
-                }).start();
-            }
+            applyAsyncLater(ex);
         }
+    }
+
+    private void applyAsyncLater(Exception ex) {
+        applyCounter.add(ex);
+        logger.log(Level.WARNING,
+                "apply off ShutdownQueue Plugin settings called to soon: " + applyCounter.size() + "/" + MAX_APPLY_ATTEMPTS + "; now with: " + ex.getMessage() + " occured");
+        if (applyCounter.size() >= MAX_APPLY_ATTEMPTS) {
+            noMoreTries();
+        } else {
+            new Thread(() -> applyDelayed()).start();
+        }
+    }
+
+    private void noMoreTries() {
+        logger.log(Level.SEVERE, "apply off ShutdownQueue Plugin settings failed : " + applyCounter.size() + "-times; Max was " + MAX_APPLY_ATTEMPTS + "game over:");
+        for (int x = 0; x < applyCounter.size(); x++) {
+            Exception oldex = applyCounter.get(x);
+            logger.log(Level.SEVERE, x + " ShutdownQueue old exception: ", oldex);
+        }
+    }
+
+    private void applyDelayed() {
+        logger.log(Level.WARNING, "Sleeping 2s to try apply later");
+        try {
+            Thread.sleep(2000);
+        } catch (Exception ex) {
+            logger.log(Level.INFO, "sleep gone", ex);
+        }
+        apply();
     }
 
     public FormValidation doCheckPermeability(@QueryParameter String value) {
