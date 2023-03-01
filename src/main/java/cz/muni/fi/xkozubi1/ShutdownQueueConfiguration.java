@@ -12,6 +12,9 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +34,9 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
     private long periodRunnable = 10;
     private double permeability = 0.7;
     private long timeOpenQueueMillis = 500;
+
+    private static int MAX_APPLY_ATTEMPTS = 200;
+    private static List<Exception> applyCounter = Collections.synchronizedList(new ArrayList<>(MAX_APPLY_ATTEMPTS + 1));
 
 
     public static ShutdownQueueConfiguration getInstance() {
@@ -147,21 +153,32 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
             }
             Utils.handleSorterOn(isSorterOn());
             ShutdownQueueComputerListener.changeScheduleInterval(periodRunnable);
-            logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called OK.");
+            logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called OK on attempt " + applyCounter.size());
+            applyCounter.clear();
         } catch (Exception ex) {
-            logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called to soon.");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    logger.log(Level.WARNING, "Sleeping 2s to try apply later");
-                    try {
-                        Thread.sleep(2000);
-                    } catch (Exception ex) {
-                        logger.log(Level.INFO, "sleep gone", ex);
-                    }
-                    apply();
+            applyCounter.add(ex);
+            logger.log(Level.WARNING,
+                    "apply off ShutdownQueue Plugin settings called to soon: " + applyCounter.size() + "/" + MAX_APPLY_ATTEMPTS + "-times; now with: " + ex.getMessage() + " occured");
+            if (applyCounter.size() >= MAX_APPLY_ATTEMPTS) {
+                logger.log(Level.SEVERE, "apply off ShutdownQueue Plugin settings failed : " + applyCounter.size() + "-times; Max was " + MAX_APPLY_ATTEMPTS + "game over:");
+                for (int x = 0; x < applyCounter.size(); x++) {
+                    Exception oldex = applyCounter.get(x);
+                    logger.log(Level.SEVERE, x + " ShutdownQueue old exception: ", oldex);
                 }
-            }).start();
+            } else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        logger.log(Level.WARNING, "Sleeping 2s to try apply later");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception ex) {
+                            logger.log(Level.INFO, "sleep gone", ex);
+                        }
+                        apply();
+                    }
+                }).start();
+            }
         }
     }
 
