@@ -4,34 +4,60 @@ import hudson.Extension;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
+
 import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 /**
  * Settings for the plugin. Can be found in Jenkins global settings.
+ *
  * @author Dominik Kozubik
  */
 @Extension
 public class ShutdownQueueConfiguration extends GlobalConfiguration {
     private static Logger logger = Logger.getLogger(ShutdownQueueConfiguration.class.getName());
-    
-    private boolean pluginOn;
-    private boolean sorterOn;
-    private String strategyOption;
-    private double permeability;
-    private long periodRunnable;
-    private long timeOpenQueueMillis;
 
-    public ShutdownQueueConfiguration() {
-        load();
-        setDefaultValues();
+    private boolean pluginOn = false;
+    private boolean sorterOn = false;
+    private String strategyOption = "copying";
+    private long periodRunnable = 10;
+    private double permeability = 0.7;
+    private long timeOpenQueueMillis = 500;
+
+    private static int MAX_APPLY_ATTEMPTS = 200;
+    private static List<Exception> applyCounter = Collections.synchronizedList(new ArrayList<>(MAX_APPLY_ATTEMPTS + 1));
+
+
+    public static ShutdownQueueConfiguration getInstance() {
+        return GlobalConfiguration.all().get(ShutdownQueueConfiguration.class);
     }
 
+    public ListBoxModel doFillStrategyTypeItems() {
+        ListBoxModel items = new ListBoxModel();
+        items.add("Copying", "copying");
+        items.add("Remove longer", "removeLonger");
+        items.add("Sort and remove longer", "sortRemoveLonger");
+        return items;
+    }
+
+
     public boolean getPluginOn() {
+        return pluginOn;
+    }
+
+    //some older jenkinses are unabel to read is
+    public boolean isPluginOn() {
         return pluginOn;
     }
 
@@ -51,33 +77,116 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         return timeOpenQueueMillis;
     }
 
+    public boolean isSorterOn() {
+        return sorterOn;
+    }
+
+    //some older jenkinses are unabel to read is
+    public boolean getSorterOn() {
+        return sorterOn;
+    }
+
+    @DataBoundSetter
+    public void setPluginOn(boolean pluginOn) {
+        this.pluginOn = pluginOn;
+        apply();
+    }
+
+    @DataBoundSetter
+    public void setSorterOn(boolean sorterOn) {
+        this.sorterOn = sorterOn;
+        apply();
+    }
+
+    @DataBoundSetter
+    public void setStrategyOption(String strategyOption) {
+        this.strategyOption = strategyOption;
+        apply();
+    }
+
+    @DataBoundSetter
+    public void setPermeability(double permeability) {
+        this.permeability = permeability;
+        apply();
+    }
+
+    @DataBoundSetter
+    public void setPeriodRunnable(long periodRunnable) {
+        this.periodRunnable = periodRunnable;
+        apply();
+    }
+
+    @DataBoundSetter
+    public void setTimeOpenQueueMillis(long timeOpenQueueMillis) {
+        this.timeOpenQueueMillis = timeOpenQueueMillis;
+        apply();
+    }
+
+    public ShutdownQueueConfiguration() {
+        load();
+        apply();
+    }
+
+    @DataBoundConstructor
+    public ShutdownQueueConfiguration(boolean pluginOn, boolean sorterOn, String strategyOption, long periodRunnable, double permeability, long timeOpenQueueMillis) {
+        this.pluginOn = pluginOn;
+        this.sorterOn = sorterOn;
+        this.strategyOption = strategyOption;
+        this.periodRunnable = periodRunnable;
+        this.permeability = permeability;
+        this.timeOpenQueueMillis = timeOpenQueueMillis;
+        apply();
+    }
+
     @Override
-    public boolean configure(StaplerRequest staplerRequest, JSONObject json) throws FormException {
-        pluginOn = json.optBoolean("pluginOn", true);
-        sorterOn = json.optBoolean("sorterOn", false);
-        strategyOption = json.optString("strategyType", "copying");
-        periodRunnable = json.optLong("periodRunnable", 10);
-        permeability = json.optDouble("permeability", 0.7);
-        timeOpenQueueMillis = json.optLong("timeOpenQueueMillis", 500);
-
-        logger.info("\nShutdown-queue plugin CONFIGURATION\n" +
-                "\nplugin: " + pluginOn +
-                "\nsorter: " + sorterOn +
-                "\nstrategy: " + strategyOption +
-                "\nperiod: " + periodRunnable +
-                "\npermeability: " + permeability +
-                "\ntimeOpenQueueMillis " + timeOpenQueueMillis
-                );
-
-        if (!pluginOn) {
-            Utils.doReset();
-        }
-
-        Utils.handleSorterOn(sorterOn);
+    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+        req.bindJSON(this, json);
         save();
-        ShutdownQueueComputerListener.changeScheduleInterval(periodRunnable);
+        apply();
+        return super.configure(req, json);
+    }
 
-        return super.configure(staplerRequest, json);
+    private void apply() {
+        try {
+            if (!pluginOn) {
+                Utils.doReset();
+            }
+            Utils.handleSorterOn(isSorterOn());
+            ShutdownQueueComputerListener.changeScheduleInterval(periodRunnable);
+            logger.log(Level.WARNING, "apply off ShutdownQueue Plugin settings called OK on attempt " + applyCounter.size());
+            applyCounter.clear();
+        } catch (Exception ex) {
+            applyAsyncLater(ex);
+        }
+    }
+
+    private void applyAsyncLater(Exception ex) {
+        applyCounter.add(ex);
+        logger.log(Level.WARNING,
+                "apply off ShutdownQueue Plugin settings called to soon: " + applyCounter.size() + "/" + MAX_APPLY_ATTEMPTS + "; now with: " + ex.getMessage() + " occured");
+        if (applyCounter.size() >= MAX_APPLY_ATTEMPTS) {
+            noMoreTries();
+        } else {
+            new Thread(() -> applyDelayed()).start();
+        }
+    }
+
+    private void noMoreTries() {
+        logger.log(Level.SEVERE, "apply off ShutdownQueue Plugin settings failed : " + applyCounter.size() + "-times; Max was " + MAX_APPLY_ATTEMPTS + "game over:");
+        for (int x = 0; x < applyCounter.size(); x++) {
+            Exception oldex = applyCounter.get(x);
+            logger.log(Level.SEVERE, x + " ShutdownQueue old exception: ", oldex);
+        }
+    }
+
+    private void applyDelayed() {
+        logger.log(Level.WARNING, "Sleeping 2s to try apply later");
+        try {
+            Thread.sleep(2000);
+        } catch (Exception ex) {
+            logger.log(Level.INFO, "sleep gone", ex);
+        }
+        apply();
     }
 
     public FormValidation doCheckPermeability(@QueryParameter String value) {
@@ -106,27 +215,4 @@ public class ShutdownQueueConfiguration extends GlobalConfiguration {
         }
     }
 
-    public ListBoxModel doFillStrategyTypeItems() {
-        ListBoxModel items = new ListBoxModel();
-
-        items.add("Copying", "copying");
-        items.add("Remove longer", "removeLonger");
-        items.add("Sort and remove longer", "sortRemoveLonger");
-
-        return items;
-    }
-    
-    private void setDefaultValues()
-    {
-        pluginOn = true;
-        sorterOn = false;
-        strategyOption = "copying";
-        permeability = 0.6;
-        periodRunnable = 10;
-        timeOpenQueueMillis = 500;
-    }
-
-    public static ShutdownQueueConfiguration getInstance() {
-        return GlobalConfiguration.all().get(ShutdownQueueConfiguration.class);
-    }
 }

@@ -43,15 +43,11 @@ public class ShutdownQueueComputerListener extends ComputerListener {
      * Changes delay value of a periodic callable shutdownTask.
      * @param time seconds
      */
-    static synchronized  void changeScheduleInterval(long time)
-    {
-        if(time > 0)
-        {
-            if (futureTask != null)
-            {
+    static synchronized  void changeScheduleInterval(long time) {
+        if(time > 0) {
+            if (futureTask != null) {
                 futureTask.cancel(false);
             }
-
             futureTask = executorService.scheduleAtFixedRate(shutdownTask, 1, time, TimeUnit.SECONDS);
         }
     }
