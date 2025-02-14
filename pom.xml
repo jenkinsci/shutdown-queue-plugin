@@ -12,7 +12,7 @@
     <version>1.5-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <properties>
-        <jenkins.version>2.346.3</jenkins.version>
+        <jenkins.version>2.479.1</jenkins.version>
         <useBeta>true</useBeta> <!--can be deleted when manage prmission does not require it anymore. https://github.com/jenkinsci/jenkins/blob/master/core/src/main/java/jenkins/model/Jenkins.java -->
 
     </properties>
