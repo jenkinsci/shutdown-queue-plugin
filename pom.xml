@@ -25,14 +25,6 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <id>dkozubik</id>
-            <name>Dominik Kozubik</name>
-            <email>xkozubi1@fi.muni.cz</email>
-        </developer>
-    </developers>
-
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     <scm>
         <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
