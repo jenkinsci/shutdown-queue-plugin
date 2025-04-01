@@ -211,7 +211,7 @@ public class HandleQuietingDown {
      * @param timeMillis "Open queue time" from the settings
      * @throws InterruptedException
      */
-    @SuppressFBWarnings(value = {"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"}, justification = "intentional global state keepers")
+    //@SuppressFBWarnings(value = {"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"}, justification = "intentional global state keepers")
     private void cancelAndDoQuietDown(long timeMillis) throws InterruptedException {
         if (jenkinsInstance.getQueue().getBuildableItems().size() > 0)
         {
